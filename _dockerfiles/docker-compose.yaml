@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  #nginx
+  qsserverfe:
+    container_name: qsserverfe
+    image: nginx:stable-alpine
+    restart: always
+    ports:
+      - "6080:80"
+    volumes:
+      - ../html:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - scorpionet
+
+  #php
+  qsfe:
+    container_name: qsfe
+    build:
+      context: .
+      dockerfile: ./php/Dockerfile
+    restart: always
+    volumes:
+      - ../html:/var/www/html
+    networks:
+      - scorpionet
+
+  #nginx
+  qsserverbe:
+    container_name: qsserverbe
+    image: nginx:stable-alpine
+    restart: always
+    ports:
+      - "6085:85"
+    volumes:
+      - ../admin:/var/www/admin
+      - ./nginxbe/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - scorpionet
+
+  #php
+  qsbe:
+    container_name: qsbe
+    build:
+      context: .
+      dockerfile: ./php/Dockerfile
+    restart: always
+    volumes:
+      - ../admin:/var/www/admin
+    networks:
+      - scorpionet
+
+networks:
+  scorpionet:
+    name: scorpionet
